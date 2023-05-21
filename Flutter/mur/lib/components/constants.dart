@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:flutter/material.dart';
 
 const String google_api_key = "AIzaSyChyanawTPrdUWJfY9Z1lU9dmyzXnQALU8";

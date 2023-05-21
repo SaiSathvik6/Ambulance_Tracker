@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import 'constants.dart';
 
 class OrderTrackingPage extends StatefulWidget {
   const OrderTrackingPage({key? key}) : super(key: key);
@@ -50,7 +53,7 @@ class OrderTrackingPageState extends StateOrdertrackingPage> {
                 newLoc.latitude!, 
                 newLoc.longitude!,
               ),
-            ),//Lating //CameraPosition
+            ),
           ),
         );
 
@@ -60,24 +63,25 @@ class OrderTrackingPageState extends StateOrdertrackingPage> {
   }
 
   void getPolyPoints() async {
-    PolyLinePoints polylinePoints = PolyLinePoints();
-
     PolylinePoints polylinePoints = PolylinePoints();
-    PolylineResult result = polylinePoints.getRouteBetweenCoordinates
-      google_api_key;
+
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      google_api_key,
       PointLating(sourceLocation.latitude, sourceLocation.longitude),
       PointLating(destination.latitude,destination.longitude),
     );
-
-    if(result.points.isNotEmpty){
-      result.points.forEach(
-        (PointLating point) => polylineCoordinates.add(
-          LatLng(point.latitude, point.longitude),
-        ),
-      );
-      setState(() {});
-    }
   }
+
+  if(result.points.isNotEmpty){
+    result.points.forEach(
+      (PointLating point) => 
+      polylineCoordinates.add(
+        LatLng(point.latitude, point.longitude),
+      ),
+    );
+    setState(() {});
+  }
+}
 
   void setCustomMarkerIcon(){
     BitmapDescriptor.fromAssetImage(
@@ -100,7 +104,7 @@ class OrderTrackingPageState extends StateOrdertrackingPage> {
             ImageConfiguration.empty, "assets/Badge.png")
           .then(
             (icon) {
-              currentLocation = icon;
+              currentLocationIcon = icon;
       },
     );
   }
@@ -119,9 +123,9 @@ class OrderTrackingPageState extends StateOrdertrackingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const text(
+        title: const Text(
           "Track order",
-          style: TextStyle(color: Colors.black, fontsize: 16),
+          style: TextStyle(color: Colors.black, fontSize: 16),
         ),
       ),
       body: currentLocation == null 
@@ -129,25 +133,26 @@ class OrderTrackingPageState extends StateOrdertrackingPage> {
       : GoogleMap(
           initialCameraPosition: CameraPosition(
             target: LatLng(
-              currentLocation!.latiude! , currentLocation.longitude
+              currentLocation!.latitude! , currentLocation!.longitude!
             ), 
             zoom: 13.5
-          ), // CameraPosition
+          ), 
           polylines: {
-            Polylines: (
+            Polyline(
               polylineId: PolylineId("route"),
               points: polylineCoordinates,
               color: primaryColor,
               width: 6,
-            ),//Polyline
+            ),
           },
         markers: {
           Marker(
             markerId: const MarkerId("currentLocation"),
-            icon: currentLocation
+            icon: currentLocationIcon,
             position: LatLng(
-              currentLocation!.latitude!, currentLocation.longitude),
-          ),//Marker
+              currentLocation!.latitude!, currentLocation!.longitude!
+            ),
+          ),
           Marker(
             markerId: MarkerId("source"),
             icon: sourceIcon,
@@ -162,10 +167,6 @@ class OrderTrackingPageState extends StateOrdertrackingPage> {
         onMapCreated: (mapController) {
           _controller.complete(mapController);
         },
-      ), //GoogleMap
-    )
-
+      ), 
+    );
   }
-
-
-}
